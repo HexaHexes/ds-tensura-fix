@@ -1,0 +1,54 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "dstensurafix"
+version = "1.0.0"
+displayName = "DS Tensura Compat Fix"
+description = '''
+Fixes and rebalances Tensura's DragonSkinSkill for dragon races:
+- Removes the "must not wear armor" hard restriction (the passive can be
+  toggled on and stays on even while armored).
+- Fixes canBeSlotted so the skill can be placed into a skill slot.
+- Rebalances the granted defense: reduced by 17.5% per equipped armor piece,
+  and recomputed live when armor changes while the passive is active.
+'''
+
+[[mixins]]
+config = "dstensurafix.mixins.json"
+
+[[dependencies.dstensurafix]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.dstensurafix]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.21.2)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.dstensurafix]]
+modId = "tensura"
+type = "required"
+versionRange = "[2.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.dstensurafix]]
+modId = "manascore"
+type = "required"
+versionRange = "[4.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.dstensurafix]]
+modId = "dstensuracompat"
+type = "required"
+versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"

@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "dev.kurok.mods.dstensurafix.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "DragonSkinSkillMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
