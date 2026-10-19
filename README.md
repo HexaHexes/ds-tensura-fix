@@ -56,7 +56,7 @@ Requires JDK 21. Compile-only mod jars go in `libs/`, gametest-run mod jars in `
 
 ```powershell
 $env:JAVA_HOME = "C:\Program Files\Java\jdk-21"
-gradle build          # jar -> build\libs\dstensurafix-1.1.0.jar
+gradle build          # jar -> build\libs\dstensurafix-1.1.1.jar
 gradle runGametest    # headless GameTestServer in run/, graded by the build
 ```
 

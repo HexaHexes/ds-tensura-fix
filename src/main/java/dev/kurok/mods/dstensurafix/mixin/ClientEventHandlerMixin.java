@@ -24,8 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "com.dstensuracompat.client.ClientEventHandler")
 public abstract class ClientEventHandlerMixin {
 
+    // Note: the target method is static, so the handler must be static too.
     @Inject(method = "enforceHudConfigValues", at = @At("HEAD"), cancellable = true)
-    private void dstensurafix$restoreVanillaHudConfig(CallbackInfo ci) {
+    private static void dstensurafix$restoreVanillaHudConfig(CallbackInfo ci) {
         // Compat also enables items rendered in the dragon's mouth - keep that.
         ClientDragonRenderer.renderItemsInMouth = Boolean.TRUE;
 

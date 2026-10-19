@@ -15,12 +15,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "com.dstensuracompat.client.CustomHpOverlay")
 public abstract class CustomHpOverlayMixin {
 
+    // Note: the target method is static, so the handler must be static too.
     @Inject(
             method = "onRenderGui(Lnet/neoforged/neoforge/client/event/RenderGuiEvent$Post;)V",
             at = @At("HEAD"),
             cancellable = true
     )
-    private void dstensurafix$skipCustomHpOverlay(CallbackInfo ci) {
+    private static void dstensurafix$skipCustomHpOverlay(CallbackInfo ci) {
         ci.cancel();
     }
 }
