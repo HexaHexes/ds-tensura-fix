@@ -12,3 +12,7 @@ out/
 run/
 run-data/
 runs/
+
+# Local compile/test mod jars (never committed)
+libs/
+testmods/

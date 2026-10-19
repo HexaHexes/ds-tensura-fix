@@ -6,6 +6,11 @@
   "mixins": [
     "DragonSkinSkillMixin"
   ],
+  "client": [
+    "ClientEventHandlerMixin",
+    "CustomHpOverlayMixin",
+    "OverlayHandlerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

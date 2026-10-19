@@ -4,15 +4,23 @@ license = "All Rights Reserved"
 
 [[mods]]
 modId = "dstensurafix"
-version = "1.0.0"
+version = "1.1.0"
 displayName = "DS Tensura Compat Fix"
 description = '''
-Fixes and rebalances Tensura's DragonSkinSkill for dragon races:
+Fixes and rebalances Tensura's DragonSkinSkill for dragon races, and restores
+the vanilla Tensura HUD as the only player HUD:
 - Removes the "must not wear armor" hard restriction (the passive can be
   toggled on and stays on even while armored).
 - Fixes canBeSlotted so the skill can be placed into a skill slot.
 - Rebalances the granted defense: reduced by 17.5% per equipped armor piece,
   and recomputed live when armor changes while the passive is active.
+- Hides Dragon Survival's skill/mana/cast-bar HUD layer so it no longer
+  doubles the Tensura ability row.
+- Cancels dstensuracompat's CustomHpOverlay and its per-tick HUD config
+  forcing, restoring the vanilla Tensura portrait HUD (with More Vanities
+  reskin support) instead.
+- Guards the portrait's in-world model render against Dragon Survival
+  mutating the player's facing angles.
 '''
 
 [[mixins]]
@@ -50,5 +58,12 @@ side = "BOTH"
 modId = "dstensuracompat"
 type = "required"
 versionRange = "[1.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.dstensurafix]]
+modId = "dragonsurvival"
+type = "required"
+versionRange = "[2.0,)"
 ordering = "AFTER"
 side = "BOTH"
