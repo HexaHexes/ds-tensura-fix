@@ -1,4 +1,4 @@
-﻿# Agent rules and conventions â€” Tensura Dragon Skin Rebalance
+# Agent rules and conventions â€” Tensura Dragon Skin Rebalance
 
 **Repo:** `HexaHexes/tensura-dragon-skin-rebalance` Â· **Local folder:** `ds-tensura-fix` Â· **Mod ID:** `dstensurafix` Â· **Branch:** `main`
 **Platform:** Minecraft 1.21.1 / NeoForge 21.1.259 / JDK 21 Â· **Jar:** `build/libs/dstensurafix-<version>.jar`
