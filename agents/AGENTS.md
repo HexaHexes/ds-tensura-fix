@@ -21,14 +21,21 @@ point, not a shortcut.
   `DragonSkinSkill` mixin applies (`canBeSlotted` forced true), and that the mana
   bridge writes a correct modifier onto `tensura:max_magicule`.
 - **The mana bridge** (`ManaBridge`, tick-registered by the `DstensuraFix` `@Mod`
-  entry point) reads `ManaHandler.getRawMaxMana(player)` and applies one
+  entry point) reads the player's genuine DS stage pool - the `dragonsurvival:mana`
+  attribute (registered max `1024`) plus the species XP bonus - and applies one
   `ADD_MULTIPLIED_TOTAL` modifier (id `dstensurafix:mana_bridge`) to
-  `TensuraAttributes.MAX_MAGICULE`, amount = rawMaxMana * `DSTENSURAFIX_MANA_TO_MAGICULE`
-  (default `0.01`). It runs server-side only and only rewrites the modifier when the
-  amount changes. `apply(player, rawMana)` is kept separate from `sync(player)` so the
-  gametest can drive it with a known mana value. `max_magicule` is a syncable generic
-  attribute, so it reaches the client on its own. Do not change the operation to an
-  add-type one — multiply-total is what makes it stack fairly on Tensura's own bonuses.
+  `TensuraAttributes.MAX_MAGICULE`, amount = min(stageMana, 1024) *
+  `DSTENSURAFIX_MANA_TO_MAGICULE` (default `0.01`). **Never read
+  `ManaHandler.getRawMaxMana` here**: `dstensuracompat` mixins that method to
+  return Tensura's max-magicule attribute value, so reading it fed this bridge's
+  own modifier back into itself every tick and pinned max magicule at Tensura's
+  1e9 attribute ceiling (fixed in 1.1.2). Only dragons carry the modifier;
+  `sync` clears it for everyone else, which also remediates pre-fix characters.
+  `apply(player, stageMana)` is kept separate from `sync(player)` so the
+  gametest can drive it with a known mana value. `max_magicule` is a syncable
+  generic attribute, so it reaches the client on its own. Do not change the
+  operation to an add-type one - multiply-total is what makes it stack fairly
+  on Tensura's own bonuses.
 - **The HUD mixins are client-only and cannot run headless** — verify in-game:
   only the vanilla Tensura portrait HUD renders (no compat frame, no DS skill row),
   More Vanities reskin still applies, and the portrait's in-world model does not leave

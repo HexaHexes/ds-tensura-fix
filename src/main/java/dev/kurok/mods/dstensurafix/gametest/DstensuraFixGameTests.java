@@ -40,11 +40,12 @@ public class DstensuraFixGameTests {
 
     /**
      * Proves the mana bridge writes a correct modifier onto Tensura's
-     * {@code tensura:max_magicule} attribute: a known DS mana pool must land as a
-     * single ADD_MULTIPLIED_TOTAL modifier whose amount is mana * 0.01, and it must
-     * actually raise the magicule maximum. The {@link ManaBridge#sync} path (which
-     * reads the live DS mana) is then run to confirm it applies cleanly on a real
-     * player without needing a populated Dragon Survival state.
+     * {@code tensura:max_magicule} attribute: a known stage-mana value must land as
+     * a single ADD_MULTIPLIED_TOTAL modifier whose amount is mana * 0.01, runaway
+     * values must clamp at the DS pool cap, non-positive values must clear the
+     * modifier, and the {@link ManaBridge#sync} path must refuse to apply anything
+     * to a player who is not a Dragon Survival dragon (clearing stale modifiers -
+     * the remediation path for characters that carried the pre-fix runaway one).
      */
     @GameTest(template = "empty")
     public static void manaBridgeBoostsMagiculeMax(GameTestHelper helper) {
@@ -74,9 +75,30 @@ public class DstensuraFixGameTests {
                     + ", after=" + attr.getValue() + ")");
         }
 
+        // Clamp: a runaway stage-mana read can never exceed DS's registered pool max.
+        ManaBridge.apply(player, 1.0E9D);
+        AttributeModifier clamped = attr.getModifier(ManaBridge.DSTENSURAFIX_MANA_BRIDGE);
+        if (clamped == null) {
+            throw new GameTestAssertException("mana bridge dropped the modifier at a large mana value");
+        }
+        double expectedCap = ManaBridge.DSTENSURAFIX_MANA_POOL_CAP * ManaBridge.DSTENSURAFIX_MANA_TO_MAGICULE;
+        if (clamped.amount() != expectedCap) {
+            throw new GameTestAssertException("mana bridge clamp failed: amount was " + clamped.amount()
+                    + " - expected " + expectedCap + " (pool cap * ratio)");
+        }
+
+        // Non-positive mana clears the modifier entirely.
+        ManaBridge.apply(player, -50.0D);
+        if (attr.getModifier(ManaBridge.DSTENSURAFIX_MANA_BRIDGE) != null) {
+            throw new GameTestAssertException("mana bridge kept a modifier for negative mana");
+        }
+
+        // sync() on a player who is not a DS dragon must clear, never apply -
+        // the guard that breaks the compat mana/magicule feedback loop.
+        ManaBridge.apply(player, 100.0D);
         ManaBridge.sync(player);
-        if (attr.getModifier(ManaBridge.DSTENSURAFIX_MANA_BRIDGE) == null) {
-            throw new GameTestAssertException("mana bridge sync did not apply a modifier - DS mana read failed");
+        if (attr.getModifier(ManaBridge.DSTENSURAFIX_MANA_BRIDGE) != null) {
+            throw new GameTestAssertException("mana bridge sync applied a modifier to a non-dragon player");
         }
 
         helper.succeed();
