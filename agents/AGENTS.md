@@ -4,8 +4,9 @@
 **Platform:** Minecraft 1.21.1 / NeoForge 21.1.259 / JDK 21 · **Jar:** `build/libs/dstensurafix-<version>.jar`
 
 Makes Tensura's Dragon Skin toggle-passive usable for dragon races, rebalances its
-defense to stack fairly with real armor, and restores the vanilla Tensura HUD as the
-only player HUD. **This is the sanctioned mixin mod** of the ecosystem — mixins are the
+defense to stack fairly with real armor, restores the vanilla Tensura HUD as the only
+player HUD, and bridges the Dragon Survival mana pool into Tensura's magicule maximum.
+**This is the sanctioned mixin mod** of the ecosystem — mixins are the
 point, not a shortcut.
 
 **Dependencies (all required — load fails without them)**
@@ -13,11 +14,21 @@ point, not a shortcut.
   Dragon Survival (`dragonsurvival`),
   Dragon Survival Tensura Compat (`dstensuracompat`).
 
-**Test:** `./gradlew runGametest` — 1 required test. `expectedTests = 1`.
+**Test:** `./gradlew runGametest` — 2 required tests. `expectedTests = 2`.
 
 **Gotchas**
-- The gametest proves only that the mod + dependency closure load and that the
-  `DragonSkinSkill` mixin applies (`canBeSlotted` forced true).
+- The gametest proves that the mod + dependency closure load, that the
+  `DragonSkinSkill` mixin applies (`canBeSlotted` forced true), and that the mana
+  bridge writes a correct modifier onto `tensura:max_magicule`.
+- **The mana bridge** (`ManaBridge`, tick-registered by the `DstensuraFix` `@Mod`
+  entry point) reads `ManaHandler.getRawMaxMana(player)` and applies one
+  `ADD_MULTIPLIED_TOTAL` modifier (id `dstensurafix:mana_bridge`) to
+  `TensuraAttributes.MAX_MAGICULE`, amount = rawMaxMana * `DSTENSURAFIX_MANA_TO_MAGICULE`
+  (default `0.01`). It runs server-side only and only rewrites the modifier when the
+  amount changes. `apply(player, rawMana)` is kept separate from `sync(player)` so the
+  gametest can drive it with a known mana value. `max_magicule` is a syncable generic
+  attribute, so it reaches the client on its own. Do not change the operation to an
+  add-type one — multiply-total is what makes it stack fairly on Tensura's own bonuses.
 - **The HUD mixins are client-only and cannot run headless** — verify in-game:
   only the vanilla Tensura portrait HUD renders (no compat frame, no DS skill row),
   More Vanities reskin still applies, and the portrait's in-world model does not leave

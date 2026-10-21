@@ -21,6 +21,9 @@ the vanilla Tensura HUD as the only player HUD:
   reskin support) instead.
 - Guards the portrait's in-world model render against Dragon Survival
   mutating the player's facing angles.
+- Bridges the Dragon Survival mana pool into Tensura's magicule maximum
+  (1% of the pool as a magicule multiplier), so DS mana growth from the
+  stage-parity datapack translates into usable magicules.
 '''
 
 [[mixins]]

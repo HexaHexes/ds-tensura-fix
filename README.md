@@ -1,8 +1,9 @@
 # Tensura Dragon Skin Rebalance
 
 Makes Tensura's **Dragon Skin** passive actually usable for dragon races, balances its
-defense so it plays fair alongside real armor, and restores the normal Tensura HUD
-(removing the doubled ability rows some setups show).
+defense so it plays fair alongside real armor, restores the normal Tensura HUD
+(removing the doubled ability rows some setups show), and feeds your Dragon Survival
+mana pool into your Tensura magicules.
 
 ## What it changes
 
@@ -36,6 +37,22 @@ Tensura portrait HUD back in charge:
 - The compat overlay's frame, portrait and HP/shield bars are removed.
 - The portrait's 3D model no longer leaves your dragon facing sideways.
 - **More Vanities** reskins still apply to the portrait.
+
+### Dragon mana feeds your magicules
+
+Dragon Survival grows a dragon's mana pool as it ages (from the stage-parity
+datapack: roughly 10 mana as a newborn, up to about 100 as an ancient). Tensura
+spends magicules on skills and magic, but that growing pool did nothing for your
+magicules. This mod bridges the two:
+
+- Your maximum magicules are multiplied by **1% of your Dragon Survival mana
+  pool**. An ancient dragon around 100 mana gets roughly double the magicule
+  maximum; a newborn around 10 mana gets a small 10% bump.
+- The bonus tracks your mana pool live, so it grows as your dragon ages and
+  stacks fairly on top of whatever magicule bonuses your race already grants.
+
+Tune the conversion with `DSTENSURAFIX_MANA_TO_MAGICULE` in the config
+(default `0.01` = 1% of the pool; set `0` to turn the bridge off).
 
 ## Getting it in-game
 
