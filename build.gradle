@@ -36,13 +36,63 @@ neoForge {
     }
 }
 
+configurations {
+    // Runtime closure for the gametest run: staged into run/mods below.
+    gametestMods
+    // Resolved manascore core artifact; its nested module jars are extracted
+    // into build/ for the compile classpath (see extractManascoreModules).
+    manascoreModules
+}
+
+repositories {
+    maven {
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com'
+    }
+    mavenCentral()
+}
+
+// Compiled-against view of the extracted manascore module jars; the file
+// collection carries the task dependency, so javac always sees fresh output.
+def manascoreModuleJars = files(fileTree(dir: layout.buildDirectory.dir('manascore-modules').get().asFile, include: '**/*.jar'))
+manascoreModuleJars.builtBy 'extractManascoreModules'
+
 dependencies {
-    // Compile-only against the real mods (gitignored libs/): Dragon Survival
-    // (MagicHUD, ClientDragonRenderer, MovementData/DSDataAttachments), Tensura
-    // (HudConfig, OverlayHandler) and ManasCore (ConfigRegistry). The compat
-    // mixin targets are addressed by class-name string, so dstensuracompat
-    // itself is not needed at compile time.
-    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+    // Compile-only against the real mods (CurseMaven coordinates, so a clean
+    // checkout resolves them): Dragon Survival (MagicHUD, ClientDragonRenderer,
+    // MovementData/DSDataAttachments), Tensura (HudConfig, OverlayHandler) and
+    // ManasCore (ConfigRegistry). The compat mixin targets are addressed by
+    // class-name string, so dstensuracompat itself is not needed at compile
+    // time. ManasCore's module jars nest inside the core artifact under
+    // META-INF/jars - extracted below, never committed.
+    compileOnly 'curse.maven:dragon-survival-420799:8973485' // DragonSurvival-1.21.1-v2.0.71
+    compileOnly 'curse.maven:tensura-reincarnated-643695:8793360' // tensura-neoforge-2.0.1.3
+    compileOnly 'curse.maven:manascore-619025:8022425' // manascore-neoforge-4.0.0.2 (core)
+    compileOnly manascoreModuleJars
+
+    manascoreModules 'curse.maven:manascore-619025:8022425'
+
+    gametestMods 'curse.maven:architectury-419699:8492726' // architectury-13.0.11-neoforge
+    gametestMods 'curse.maven:dragonborn-lib-1409923:8858416' // dragonborn_lib-1.3.2
+    gametestMods 'curse.maven:dragon-survival-420799:8973485'
+    gametestMods 'curse.maven:ds-dragonborn-cave-forest-sea-1413379:8741893'
+    gametestMods 'curse.maven:dstensuracompat-1668041:8748395'
+    gametestMods 'curse.maven:geckolib-388172:8893490'
+    // The core jar nests every manascore-* module under META-INF/jars; FML's
+    // nested-jar loader installs them at runtime, so only the core is staged.
+    gametestMods 'curse.maven:manascore-619025:8022425'
+    gametestMods 'curse.maven:smartbrainlib-661293:7055149'
+    gametestMods 'curse.maven:tensura-reincarnated-643695:8793360'
+    gametestMods 'curse.maven:terrablender-940057:6054947'
+}
+
+// Extract manascore's nested module jars - byte-identical to the retired
+// testmods copies - into build/ so javac sees the module APIs (ConfigRegistry
+// and friends). Derived entirely from the resolved Maven artifact.
+tasks.register('extractManascoreModules', Sync) {
+    from { zipTree(configurations.manascoreModules.singleFile) }
+    include 'META-INF/jars/*.jar'
+    into layout.buildDirectory.dir('manascore-modules')
 }
 
 // --- gametest harness -------------------------------------------------------
@@ -50,7 +100,7 @@ dependencies {
 // Stage the pack's dependency mod jars into the run's production-style mods/
 // folder, where FML's mods-folder locator finds them exactly like in the pack.
 tasks.register('prepareGametestMods', Sync) {
-    from 'testmods'
+    from configurations.gametestMods
     into 'run/mods'
 }
 
@@ -87,4 +137,16 @@ tasks.matching { it.name == 'runGametest' }.configureEach {
         }
         logger.lifecycle("GameTest OK: all ${expectedTests} tests passed")
     }
+}
+
+// --- JUnit wiring (junit CI check) -------------------------------------------
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
 }
