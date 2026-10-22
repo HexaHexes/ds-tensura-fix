@@ -1,6 +1,6 @@
-package dev.kurok.mods.dstensurafix.gametest;
+package org.bitwisemadness.dstensurafix.gametest;
 
-import dev.kurok.mods.dstensurafix.ManaBridge;
+import org.bitwisemadness.dstensurafix.ManaBridge;
 import io.github.manasmods.tensura.ability.skill.intrinsic.DragonSkinSkill;
 import io.github.manasmods.tensura.registry.attribute.TensuraAttributes;
 import net.minecraft.gametest.framework.GameTest;

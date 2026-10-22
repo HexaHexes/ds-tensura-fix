@@ -1,4 +1,4 @@
-package dev.kurok.mods.dstensurafix.mixin;
+package org.bitwisemadness.dstensurafix.mixin;
 
 import by.dragonsurvivalteam.dragonsurvival.client.render.ClientDragonRenderer;
 import io.github.manasmods.manascore.config.ConfigRegistry;

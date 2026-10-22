@@ -1,4 +1,4 @@
-package dev.kurok.mods.dstensurafix;
+package org.bitwisemadness.dstensurafix;
 
 import by.dragonsurvivalteam.dragonsurvival.common.capability.DragonStateProvider;
 import by.dragonsurvivalteam.dragonsurvival.common.handlers.magic.ManaHandler;

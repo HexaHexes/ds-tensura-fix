@@ -1,4 +1,4 @@
-package dev.kurok.mods.dstensurafix.mixin;
+package org.bitwisemadness.dstensurafix.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

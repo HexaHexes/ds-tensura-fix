@@ -1,4 +1,4 @@
-package dev.kurok.mods.dstensurafix.client;
+package org.bitwisemadness.dstensurafix.client;
 
 import by.dragonsurvivalteam.dragonsurvival.client.gui.hud.MagicHUD;
 import net.neoforged.api.distmarker.Dist;

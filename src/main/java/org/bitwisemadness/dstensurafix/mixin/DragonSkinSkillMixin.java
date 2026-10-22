@@ -1,4 +1,4 @@
-package dev.kurok.mods.dstensurafix.mixin;
+package org.bitwisemadness.dstensurafix.mixin;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;

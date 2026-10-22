@@ -1,4 +1,4 @@
-package dev.kurok.mods.dstensurafix;
+package org.bitwisemadness.dstensurafix;
 
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
