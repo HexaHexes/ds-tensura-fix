@@ -44,8 +44,8 @@ point, not a shortcut.
   set to `0` for full bonus regardless of armor.
 - The mixin config is `"required": false` — a target change on a Tensura/compat update
   disables the affected mixin with a log error instead of crashing. Keep it that way.
-- ManasCore is a JarJar wrapper — extract its nested `META-INF/jars/*.jar` into `libs/`
-  for compilation.
+- ManasCore is a JarJar wrapper: its module jars nest under `META-INF/jars/` inside the
+  core artifact. The build extracts them via `extractManascoreModules` - never commit them.
 
 ---
 
@@ -82,8 +82,13 @@ Before starting any new development in this repo:
 - JDK 21 (`JAVA_HOME` -> JDK 21); the toolchain targets Java 21.
 - The Gradle wrapper is committed. `./gradlew build` compiles, `./gradlew runGametest`
   (or `runGameTestServer`) runs the GameTest server.
-- `libs/` (compile-only) and `testmods/` (runtime closure) are **gitignored** staging
-  folders. Never commit third-party jars.
+- **Dependencies resolve through Maven, never local folders.** Compile-only mods use
+  CurseMaven coordinates (`curse.maven:<slug>-<projectId>:<fileId>`, repository
+  `https://cursemaven.com`). Runtime mod closures for GameTest runs live in the
+  `gametestMods` Gradle configuration, synced into `run/mods` by `prepareGametestMods`.
+  Gitignored `libs/` and `testmods/` staging folders are retired: CI must resolve
+  every dependency from a clean checkout. Pin the exact version the repo was
+  verified against; bump pins deliberately, never implicitly.
 - On `run/` file-lock errors, kill any stale `java` process and retry.
 
 ## PowerShell quirks (this org is developed on Windows)
@@ -128,14 +133,12 @@ Before starting any new development in this repo:
 
 ## CI & release model
 
-- `ci.yml` currently enforces the **version-bump guard only**: a beta or stable bump must
-  change the version file and nothing else; an `-alpha` bump may bundle work; a PR labelled
-  `breaking` forces the next clean bump to raise the major or minor version.
-- **Build and GameTest jobs are deferred.** Some dependencies (ManasCore's jar-in-jar
-  sub-modules, plus a few pack mods) are not resolvable from a clean checkout via
-  CurseMaven alone, so compiling in CI would fail every run. They land once a jar-fetch
-  step exists. Until then, run `./gradlew build` and the GameTest task locally before
-  pushing.
+- `ci.yml` runs three checks that back the branch protection rulesets: **junit**
+  (build + the JUnit suite, asserted non-vacuous), **gametest** (`runGametest`,
+  graded on the `All N required tests passed` log line - the exit code is not a
+  reliable signal) and **version-bump** (a beta or stable bump must change the
+  version file and nothing else; an `-alpha` bump may bundle work; a PR labelled
+  `breaking` forces the next clean bump to raise the major or minor version).
 - `release.yml` is **not yet enabled for the gradle mod repos** - it needs a CI-built jar
   to attach. The datapack repo is the exception: its "build" is a zip, so it has a working
   `release.yml` that tags and publishes on a version bump.
